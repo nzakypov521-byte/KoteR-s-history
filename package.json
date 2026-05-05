@@ -20,12 +20,12 @@
     "react-dom": "^18.2.0",
     "recharts": "^2.12.7",
     "xlsx": "^0.18.5",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.2.0"
+    "@types/react-dom": "^18.2.22"
   }
 }
