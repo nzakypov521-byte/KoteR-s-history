@@ -1,20 +1,11 @@
-// Отключаем встроенный парсер тела — нам нужны сырые бинарные данные
-export const config = {
-    api: { bodyParser: false },
-  }
-  
-  export default async function handler(req, res) {
+export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).end()
   
     try {
-      // Читаем сырые бинарные данные аудио
-      const chunks = []
-      for await (const chunk of req) chunks.push(chunk)
-      const buffer = Buffer.concat(chunks)
+      const { audio } = req.body
+      if (!audio) return res.status(400).json({ error: 'Аудио пустое' })
   
-      if (buffer.length === 0) {
-        return res.status(400).json({ error: 'Аудио пустое' })
-      }
+      const buffer = Buffer.from(audio, 'base64')
   
       const form = new FormData()
       form.append('file', new Blob([buffer], { type: 'audio/webm' }), 'audio.webm')
