@@ -12,6 +12,8 @@ export default async function handler(req, res) {
       form.append('model', 'whisper-large-v3')
       form.append('language', 'ru')
       form.append('response_format', 'json')
+
+      form.append('prompt', 'Финансы, транзакции, расходы, доходы. Сленг: косарь, косяк, штука, пятихатка, стольник, лимон, бакс, тугрик. Валюты: сом, KGS, USD, рубль, тенге, сум.')
   
       const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
         method: 'POST',
