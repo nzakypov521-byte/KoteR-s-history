@@ -1,11 +1,24 @@
+import { parseLimiter, getIP } from './_ratelimit.js'
+
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).end()
-  
+
+
+    // ── Rate limiting ──────────────────────────────
+    const ip = getIP(req)
+    const { success, reset } = await parseLimiter.limit(ip)
+
+    if (!success) {
+        return res.status(429).json({
+            error: `Слишком много запросов. Попробуйте через ${Math.ceil((reset - Date.now()) / 1000)} сек.`,
+        })
+    }
+
     const { text, baseCurrency } = req.body
     if (!text) return res.status(400).json({ error: 'No text' })
-  
+
     const now = new Date().toISOString()
-  
+
     const systemPrompt = `
   You are a financial transaction parser for a personal finance app.
   Parse the user's voice input (in Russian, possibly with slang) into transactions.
@@ -73,37 +86,37 @@ export default async function handler(req, res) {
   
   Return ONLY the JSON array.
   `.trim()
-  
+
     try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          temperature: 0.1,
-          max_tokens: 1024,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user',   content: text },
-          ],
-        }),
-      })
-  
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}))
-        return res.status(response.status).json({ error: err?.error?.message || 'Groq error' })
-      }
-  
-      const data = await response.json()
-      const raw  = data.choices?.[0]?.message?.content ?? ''
-      const clean = raw.replace(/```json|```/gi, '').trim()
-      const parsed = JSON.parse(clean)
-  
-      res.json({ transactions: parsed })
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                temperature: 0.1,
+                max_tokens: 1024,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: text },
+                ],
+            }),
+        })
+
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}))
+            return res.status(response.status).json({ error: err?.error?.message || 'Groq error' })
+        }
+
+        const data = await response.json()
+        const raw = data.choices?.[0]?.message?.content ?? ''
+        const clean = raw.replace(/```json|```/gi, '').trim()
+        const parsed = JSON.parse(clean)
+
+        res.json({ transactions: parsed })
     } catch (err) {
-      res.status(500).json({ error: err.message })
+        res.status(500).json({ error: err.message })
     }
-  }
+}
