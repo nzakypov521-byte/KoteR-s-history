@@ -198,7 +198,7 @@ export default function SettingsScreen() {
           Знай куда уходят деньги
         </div>
         <div style={{ fontSize: 11, color: "var(--text-dim)", marginTop: 8 }}>
-          v1.0.0 · Голосовой бухгалтер для ИП и МСБ
+          v1.3.1 · Голосовой бухгалтер для ИП и МСБ
         </div>
       </div>
     </div>
