@@ -28,18 +28,32 @@ export default function SplashScreen({ onEnter }) {
         padding: 24, cursor: 'pointer', userSelect: 'none',
       }}
     >
-      <button
-        style={{
+      <div style={{
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', gap: 10,
+      }}>
+        {/* Подсказка */}
+        <div style={{
+          fontSize: 11,
+          color: 'rgba(255,255,255,0.2)',
+          letterSpacing: 0.5,
+          textAlign: 'center',
+        }}>
+          дважды нажмите
+        </div>
+
+        {/* Микрофон */}
+        <button style={{
           width: 52, height: 52, borderRadius: '50%',
           background: 'rgba(255,255,255,0.05)',
           border: '1px solid rgba(255,255,255,0.1)',
           color: 'rgba(255,255,255,0.3)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer',
-        }}
-      >
-        <Mic size={20} />
-      </button>
+        }}>
+          <Mic size={20} />
+        </button>
+      </div>
     </div>
   )
 }
